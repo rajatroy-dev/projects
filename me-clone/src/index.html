@@ -10,49 +10,80 @@
 </head>
 
 <body>
-    <div class="container-auto flex flex-col sm:flex-row justify-between items-center p-2">
-        <a href="#" class="text-4xl">Logo</a>
-        <div class="flex justify-center">
-            <div class="flex flex-col lg:flex-row">
-                <div class="p-2 mx-auto">
-                    <button class="shadow-md rounded-md px-2 py-1">Live / Online Classes</button>
+    <header class="relative md:sticky md:z-10 top-0 bg-white">
+        <div class="container-auto flex flex-col sm:flex-row justify-between items-center">
+            <a href="#" class="text-4xl px-2">Logo</a>
+            <div class="flex flex-col justify-center">
+                <div class="flex justify-center px-2">
+                    <div class="flex flex-col lg:flex-row">
+                        <div class="p-2 mx-auto">
+                            <button class="shadow-md rounded-md px-2 py-1">Live / Online Classes</button>
+                        </div>
+                        <div class="p-2 mx-auto">
+                            <button class="shadow-md rounded-md px-2 py-1 bg-green-900 text-green-50">Online Test
+                                Series</button>
+                        </div>
+                    </div>
+                    <div class="flex flex-col lg:flex-row">
+                        <div class="p-2 mx-auto">
+                            <button class="shadow-md rounded-md px-2 py-1">Postal Package</button>
+                        </div>
+                        <div class="p-2 mx-auto">
+                            <button class="shadow-md rounded-md px-2 py-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path
+                                        d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                                </svg>
+                                9876543210
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="p-2 mx-auto">
-                    <button class="shadow-md rounded-md px-2 py-1 bg-green-900 text-green-50">Online Test Series</button>
+                <div class="flex justify-center sm:justify-end sm:px-2">
+                    <div class="p-2 border-r-2">
+                        <a href="#" class="">Online Admission</a>
+                    </div>
+                    <div class="p-2 border-r-2">
+                        <a href="#" class="">Student Portal</a>
+                    </div>
+                    <div class="p-2">
+                        <a href="#" class="">Contact Us</a>
+                    </div>
                 </div>
             </div>
-            <div class="flex flex-col lg:flex-row">
-                <div class="p-2 mx-auto">
-                    <button class="shadow-md rounded-md px-2 py-1">Postal Package</button>
-                </div>
-                <div class="p-2 mx-auto">
-                    <button class="shadow-md rounded-md px-2 py-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path
-                                d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                        </svg>
-                        9876543210
-                    </button>
-                </div>
-            </div>
+        </div>
+
+        <div class="container-auto px-2 border-y-4 md:hidden flex justify-center">
+            <a class="p-2" href="">Courses</a>
+            <a class="p-2" href="">Fee Structure</a>
+            <a class="p-2" href="">New Batches</a>
+        </div>
+        <nav class="bg-green-900 text-green-50 hidden lg:block">
+            <ul class="flex justify-center">
+                <li class="px-4 py-2"><a href="" class="">ABOUT US</a></li>
+                <li class="border-l-2 px-4 py-2"><a href="" class="">ESE</a></li>
+                <li class="border-l-2 px-4 py-2"><a href="" class="">GATE</a></li>
+                <li class="border-l-2 px-4 py-2"><a href="" class="">PSUs</a></li>
+                <li class="border-l-2 px-4 py-2"><a href="" class="">SSC</a></li>
+                <li class="border-l-2 px-4 py-2"><a href="" class="">ADMISSIONS</a></li>
+                <li class="border-l-2 px-4 py-2"><a href="" class="">TEST SERIES</a></li>
+                <li class="border-l-2 px-4 py-2"><a href="" class="">OUR RESULTS</a></li>
+                <li class="border-l-2 px-4 py-2"><a href="" class="">CENTRES</a></li>
+                <li class="border-l-2 px-4 py-2"><a href="" class="">FREE DOWNLOADS</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container-auto">
+        <div class="mx-2 py-2 my-2 rounded-md flex justify-center bg-green-900 text-green-50">
+            <a class="px-2" href="">GATE 2021 Selections</a>
+            <a class="border-l-2 px-2" href="">ESE 2020 Selections</a>
         </div>
     </div>
-    <div class="container-auto flex justify-center sm:justify-end">
-        <div class="p-2 border-r-2">
-            <a href="#" class="">Online Admission</a>
-        </div>
-        <div class="p-2 border-r-2">
-            <a href="#" class="">Student Portal</a>
-        </div>
-        <div class="p-2">
-            <a href="#" class="">Contact Us</a>
-        </div>
-    </div>
-    <div class="container-auto border-y-4 md:hidden flex justify-center">
-        <a class="p-2" href="">Courses</a>
-        <a class="p-2" href="">Fee Structure</a>
-        <a class="p-2" href="">New Batches</a>
+
+    <div class="container-auto aspect-w-16 aspect-h-9 sm:aspect-h-6 xl:aspect-h-4">
+        <img class="" src="assets/images/minkus-ulZXheJLb2Y-unsplash.jpg" alt="">
     </div>
 </body>
 

@@ -17,5 +17,8 @@
   "license": "MIT",
   "devDependencies": {
     "tailwindcss": "^3.0.15"
+  },
+  "dependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.0"
   }
 }
