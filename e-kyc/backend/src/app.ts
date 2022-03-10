@@ -1,5 +1,6 @@
-import express, {NextFunction, Request, Response} from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import HttpError from './models/http-error';
+
 const app = express();
 const port = 6060;
 
@@ -8,20 +9,18 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // 404. No routes found
-app.use((_: Request, __:Response, next) => {
+app.use((_: Request, __: Response, next) => {
   next(new HttpError('API not found!', 404));
 });
 
 // Error
-app.use((error: HttpError, _: Request, res: Response, next: NextFunction) => {
+app.use((error: HttpError, _: Request, res: Response, next: NextFunction): void => {
   if (res.headersSent) {
     return next(error);
   }
 
   res.status(error.code || 500);
-  res.json({error: error.message || 'An unknown error has occured!'});
+  res.json({ error: error.message || 'An unknown error has occured!' });
 });
 
-app.listen(port, () => {
-  return console.log(`Express is listening at http://localhost:${port}`);
-});
+app.listen(port, () => console.log(`Express is listening at http://localhost:${port}`));

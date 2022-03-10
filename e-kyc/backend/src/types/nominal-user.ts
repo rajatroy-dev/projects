@@ -1,4 +1,4 @@
-export interface NominalUser {
+export interface NominalUserInfo {
     name: string;
     username: string;
 }

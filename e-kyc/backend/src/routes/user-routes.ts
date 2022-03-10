@@ -1,7 +1,6 @@
-import {Router} from 'express';
-import UserController from '../controllers/user-controller';
+import { Router } from 'express';
+import * as UserController from '../controllers/user-controller';
 
-// eslint-disable-next-line new-cap
 const routes = Router();
 
 routes.get('/users/:username', UserController.getNominalUserInfo);
