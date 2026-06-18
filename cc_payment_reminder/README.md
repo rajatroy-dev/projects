@@ -11,3 +11,16 @@ until you mark the bill as paid.
 - **Telegram**: raw Bot API calls via `requests` — `channels/telegram_channel.py`
 - **Email**: SES SMTP + a link to a TOTP-gated confirm page — `channels/email_channel.py`, `confirm_server.py`
 
+## ⚠️ Testing note
+`confirm_server.py` uses FastAPI/pyotp/qrcode:
+```bash
+pip install -r requirements.txt --break-system-packages
+python3 totp_setup.py                 # generates a secret + QR code
+python3 confirm_server.py             # starts locally on :5005
+# in another terminal, after adding a test card and getting its id:
+curl "http://127.0.0.1:5005/confirm?card_id=1"   # should show the code-entry form
+```
+
+## Security note
+Only the **last 4 digits** of each card are stored — never the full card
+number.
