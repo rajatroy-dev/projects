@@ -24,3 +24,23 @@ curl "http://127.0.0.1:5005/confirm?card_id=1"   # should show the code-entry fo
 ## Security note
 Only the **last 4 digits** of each card are stored — never the full card
 number.
+
+## Setup
+
+### 1. Install dependencies
+```bash
+cd bill-reminder
+pip install -r requirements.txt --break-system-packages
+```
+
+### 2. Create a Telegram bot
+1. Message [@BotFather](https://t.me/BotFather) on Telegram, run `/newbot`, follow prompts.
+2. Copy the bot token.
+3. Send any message to your new bot.
+4. Visit `https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates` and read `"chat":{"id": ...}` — that's your `TELEGRAM_CHAT_ID`.
+
+### 3. Configure
+```bash
+cp .env.example .env
+# fill in TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, and email settings if using email
+```
