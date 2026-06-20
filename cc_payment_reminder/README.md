@@ -44,3 +44,20 @@ pip install -r requirements.txt --break-system-packages
 cp .env.example .env
 # fill in TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, and email settings if using email
 ```
+
+### 4. Add your cards
+Message the bot **`/addcard`** (or `/newcard`) and answer the prompts: card name, last 4 digits, bill due day, and how many days before the due date to start reminding you (send `skip` for the default of 3). Send `/cancel` anytime to abort. This only works once the listener (step 6) is running, since it's driven by the same long-poll loop as `/paid`.
+
+Or use the CLI, which has no dependency on the listener being up:
+```bash
+python3 card_manager.py add
+```
+Other commands: `list`, `edit <id>`, `delete <id>`, `paid <id>` (manual mark-paid, no dependencies).
+
+### 5. Set up the hourly notifier (cron)
+```bash
+crontab -e
+```
+```
+0 * * * * /usr/bin/python3 /home/youruser/bill-reminder/notifier.py >> /home/youruser/bill-reminder/notifier.log 2>&1
+```
