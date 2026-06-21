@@ -61,3 +61,10 @@ crontab -e
 ```
 0 * * * * /usr/bin/python3 /home/youruser/bill-reminder/notifier.py >> /home/youruser/bill-reminder/notifier.log 2>&1
 ```
+
+### 6. Set up the Telegram listener (systemd)
+```bash
+sudo cp systemd/bill-listener.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now bill-listener@youruser.service
+```
