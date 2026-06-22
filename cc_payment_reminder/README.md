@@ -68,3 +68,22 @@ sudo cp systemd/bill-listener.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now bill-listener@youruser.service
 ```
+
+## Email + TOTP confirm setup
+
+### 1. SES SMTP credentials
+AWS SES console → **Account dashboard → SMTP settings → Create SMTP credentials** (not your regular IAM keys). Fill `SES_SMTP_USER`/`SES_SMTP_PASS`/`EMAIL_FROM`/`EMAIL_TO` in `.env`.
+
+### 2. Generate a TOTP secret
+```bash
+python3 totp_setup.py
+```
+This prints a secret and saves `totp_qr.png` — scan the QR code into an authenticator app (Google Authenticator, Aegis, etc.), then add the printed `TOTP_SECRET=...` line to `.env`. **Treat this secret like a password** — anyone who has it can mint valid codes.
+
+### 3. Run confirm_server.py, exposed only via Tailscale
+```bash
+sudo cp systemd/confirm-server.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now confirm-server@youruser.service
+```
+This binds locally to `127.0.0.1:5005`. Route a Tailscale-only hostname to it — this app has **no built-in exposure protection** (no rate limiting, no HTTPS of its own), because it's designed to sit behind that existing private-network boundary, not the public internet. Set `CONFIRM_BASE_URL` in `.env` to that Tailscale-only hostname.
