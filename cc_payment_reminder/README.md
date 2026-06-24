@@ -94,3 +94,8 @@ This binds locally to `127.0.0.1:5005`. Route a Tailscale-only hostname to it �
 - **Telegram**: message includes a button like **"✅ Mark 1234 as paid"** — tapping it fires a callback handled by `listener.py` (the one persistent process for Telegram). Typing `/paid 1234` or `/paid HDFC` does the same thing. Sending `/addcard` walks you through adding a new card without touching the command line (see step 4 above). Both only respond to messages from `TELEGRAM_CHAT_ID` — anyone else messaging the bot is ignored.
 - **Email**: message includes a "Mark Paid" link carrying only the card's id (not a secret). Opening it (Tailscale required) shows a code-entry page; entering your current TOTP code marks the card paid. No per-email token — the same mechanism works indefinitely since verification is stateless.
 - Once paid, hourly reminders stop for that cycle; the card auto-resets to `unpaid` when the calendar rolls into a new month.
+
+## Marking a bill as paid
+- **Telegram**: tap the button, or type `/paid 1234`
+- **Email**: click the link (Tailscale only), enter your authenticator code
+- **CLI (always works)**: `python3 card_manager.py paid <id>`
