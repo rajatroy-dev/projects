@@ -99,3 +99,6 @@ This binds locally to `127.0.0.1:5005`. Route a Tailscale-only hostname to it â€
 - **Telegram**: tap the button, or type `/paid 1234`
 - **Email**: click the link (Tailscale only), enter your authenticator code
 - **CLI (always works)**: `python3 card_manager.py paid <id>`
+
+## Why TOTP instead of a per-email link token
+A per-email token needs an expiry, single-use tracking, and a DB table to manage all that. TOTP verification is stateless â€” the code is valid proof on its own, checked against a secret set up once. Combined with restricting the confirm page to Tailscale network, this needs meaningfully less moving infrastructure while still requiring two independent things to mark a bill paid: network access to a private host, and possession of authenticator app.
