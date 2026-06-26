@@ -102,3 +102,10 @@ This binds locally to `127.0.0.1:5005`. Route a Tailscale-only hostname to it â€
 
 ## Why TOTP instead of a per-email link token
 A per-email token needs an expiry, single-use tracking, and a DB table to manage all that. TOTP verification is stateless â€” the code is valid proof on its own, checked against a secret set up once. Combined with restricting the confirm page to Tailscale network, this needs meaningfully less moving infrastructure while still requiring two independent things to mark a bill paid: network access to a private host, and possession of authenticator app.
+
+## Adding another channel later (e.g. ntfy)
+1. Create `channels/ntfy_channel.py` implementing `NotificationChannel`.
+2. Register it in `channels/registry.py`'s `_CHANNEL_CLASSES` dict.
+3. Add `ntfy` to `ACTIVE_CHANNELS` in `.env`.
+
+No changes needed in `notifier.py`, `listener.py`, or the DB layer.
