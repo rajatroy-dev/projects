@@ -15,3 +15,11 @@ polling for three kinds of inbound interaction:
 Uses raw HTTP calls (requests) rather than a heavier SDK — this bot only
 needs sendMessage, getUpdates, and answerCallbackQuery.
 """
+
+from pathlib import Path
+
+API_BASE = "https://api.telegram.org/bot{token}/{method}"
+OFFSET_FILE = Path(__file__).resolve().parent.parent / ".telegram_offset"
+
+ADD_CARD_TRIGGERS = {"/addcard", "/newcard"}
+CANCEL_TRIGGERS = {"/cancel"}
