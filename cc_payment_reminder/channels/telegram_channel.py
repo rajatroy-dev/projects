@@ -18,8 +18,27 @@ needs sendMessage, getUpdates, and answerCallbackQuery.
 
 from pathlib import Path
 
+import config
+from channels.base import NotificationChannel
+
 API_BASE = "https://api.telegram.org/bot{token}/{method}"
 OFFSET_FILE = Path(__file__).resolve().parent.parent / ".telegram_offset"
 
 ADD_CARD_TRIGGERS = {"/addcard", "/newcard"}
 CANCEL_TRIGGERS = {"/cancel"}
+
+class TelegramChannel(NotificationChannel):
+    name = "telegram"
+
+    def __init__(self):
+        self.token = config.TELEGRAM_BOT_TOKEN
+        self.chat_id = config.TELEGRAM_CHAT_ID
+        if not self.token or not self.chat_id:
+            raise RuntimeError(
+                "TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID must be set in .env"
+            )
+        # chat_id -> {"step": "card_name" | "last4" | "payment_date" | "notify_days_before",
+        #             "data": {...fields collected so far...}}
+        # In-memory only: if the listener restarts mid-conversation, the user
+        # just sends /addcard again. Not worth persisting for a single-user bot.
+        self._pending_add: dict[int, dict] = {}
