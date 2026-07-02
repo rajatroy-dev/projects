@@ -16,10 +16,13 @@ Uses raw HTTP calls (requests) rather than a heavier SDK — this bot only
 needs sendMessage, getUpdates, and answerCallbackQuery.
 """
 
+import json
 from pathlib import Path
 
+import requests
+
 import config
-from channels.base import NotificationChannel
+from channels.base import Action, NotificationChannel
 
 API_BASE = "https://api.telegram.org/bot{token}/{method}"
 OFFSET_FILE = Path(__file__).resolve().parent.parent / ".telegram_offset"
@@ -42,3 +45,21 @@ class TelegramChannel(NotificationChannel):
         # In-memory only: if the listener restarts mid-conversation, the user
         # just sends /addcard again. Not worth persisting for a single-user bot.
         self._pending_add: dict[int, dict] = {}
+
+    def _url(self, method: str) -> str:
+        return API_BASE.format(token=self.token, method=method)
+
+    def send(self, message: str, actions: list[Action]) -> None:
+        payload = {
+            "chat_id": self.chat_id,
+            "text": message,
+            "parse_mode": "Markdown",
+        }
+        if actions:
+            payload["reply_markup"] = json.dumps({
+                "inline_keyboard": [[
+                    {"text": a.label, "callback_data": a.action_id} for a in actions
+                ]]
+            })
+        resp = requests.post(self._url("sendMessage"), data=payload, timeout=15)
+        resp.raise_for_status()
