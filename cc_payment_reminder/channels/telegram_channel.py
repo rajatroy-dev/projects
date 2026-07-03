@@ -63,3 +63,18 @@ class TelegramChannel(NotificationChannel):
             })
         resp = requests.post(self._url("sendMessage"), data=payload, timeout=15)
         resp.raise_for_status()
+
+    def _send_text(self, chat_id: int, text: str) -> None:
+        resp = requests.post(
+            self._url("sendMessage"),
+            data={"chat_id": chat_id, "text": text},
+            timeout=15,
+        )
+        resp.raise_for_status()
+
+    def answer_callback(self, callback_query_id: str, text: str = "Marked as paid ✅"):
+        requests.post(
+            self._url("answerCallbackQuery"),
+            data={"callback_query_id": callback_query_id, "text": text},
+            timeout=15,
+        )
