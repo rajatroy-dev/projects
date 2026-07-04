@@ -22,6 +22,7 @@ from pathlib import Path
 import requests
 
 import config
+import db
 from channels.base import Action, NotificationChannel
 
 API_BASE = "https://api.telegram.org/bot{token}/{method}"
@@ -78,3 +79,78 @@ class TelegramChannel(NotificationChannel):
             data={"callback_query_id": callback_query_id, "text": text},
             timeout=15,
         )
+
+    def _get_offset(self) -> int:
+        if OFFSET_FILE.exists():
+            try:
+                return int(OFFSET_FILE.read_text().strip())
+            except ValueError:
+                return 0
+        return 0
+
+    def _save_offset(self, offset: int):
+        OFFSET_FILE.write_text(str(offset))
+
+    def _start_add_card(self, chat_id: int) -> None:
+        self._pending_add[chat_id] = {"step": "card_name", "data": {}}
+        self._send_text(chat_id, "Let's add a new card. What's the card name? (e.g. HDFC Regalia)\n\nSend /cancel anytime to stop.")
+
+    def _handle_add_card_reply(self, chat_id: int, text: str) -> None:
+        state = self._pending_add[chat_id]
+        step = state["step"]
+        data = state["data"]
+
+        if step == "card_name":
+            card_name = text.strip()
+            if not card_name:
+                self._send_text(chat_id, "Card name can't be empty. What's the card name?")
+                return
+            data["card_name"] = card_name
+            state["step"] = "last4"
+            self._send_text(chat_id, "Last 4 digits of the card?")
+
+        elif step == "last4":
+            last4 = text.strip()
+            if not (last4.isdigit() and len(last4) == 4):
+                self._send_text(chat_id, "That needs to be exactly 4 digits. Last 4 digits of the card?")
+                return
+            data["last4"] = last4
+            state["step"] = "payment_date"
+            self._send_text(chat_id, "What day of the month is the bill due? (1-31)")
+
+        elif step == "payment_date":
+            raw = text.strip()
+            if not (raw.isdigit() and 1 <= int(raw) <= 31):
+                self._send_text(chat_id, "Please send a valid day of month (1-31). What day is the bill due?")
+                return
+            data["payment_date"] = int(raw)
+            state["step"] = "notify_days_before"
+            self._send_text(
+                chat_id,
+                "How many days before the due date should I start reminding you?\n"
+                "Send a number, or 'skip' for the default (3).",
+            )
+
+        elif step == "notify_days_before":
+            raw = text.strip().lower()
+            if raw == "skip":
+                notify_days_before = 3
+            elif raw.isdigit():
+                notify_days_before = int(raw)
+            else:
+                self._send_text(chat_id, "Please send a whole number of days, or 'skip' for the default (3).")
+                return
+
+            card_id = db.add_card(
+                card_name=data["card_name"],
+                last4=data["last4"],
+                payment_date=data["payment_date"],
+                notify_days_before=notify_days_before,
+            )
+            del self._pending_add[chat_id]
+            self._send_text(
+                chat_id,
+                f"✅ Added #{card_id}: {data['card_name']} (••{data['last4']}), "
+                f"due day {data['payment_date']} of the month, "
+                f"reminding {notify_days_before} day(s) before.",
+            )
