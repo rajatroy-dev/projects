@@ -23,7 +23,7 @@ import requests
 
 import config
 import db
-from channels.base import Action, NotificationChannel
+from channels.base import Action, NotificationChannel, PaymentConfirmation
 
 API_BASE = "https://api.telegram.org/bot{token}/{method}"
 OFFSET_FILE = Path(__file__).resolve().parent.parent / ".telegram_offset"
@@ -154,3 +154,66 @@ class TelegramChannel(NotificationChannel):
                 f"due day {data['payment_date']} of the month, "
                 f"reminding {notify_days_before} day(s) before.",
             )
+
+    def poll_updates(self, timeout: int = 30) -> list[PaymentConfirmation]:
+        """
+        Long-poll getUpdates. Only processes updates from config.TELEGRAM_CHAT_ID
+        (this bot's token is meant for a single owner) — anything else is
+        silently ignored so a leaked bot token can't be used to add fake
+        cards or mark real ones paid.
+        """
+        offset = self._get_offset()
+        resp = requests.get(
+            self._url("getUpdates"),
+            params={"offset": offset, "timeout": timeout},
+            timeout=timeout + 10,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+        confirmations = []
+        max_update_id = offset - 1
+
+        for update in data.get("result", []):
+            max_update_id = max(max_update_id, update["update_id"])
+
+            if "callback_query" in update:
+                cq = update["callback_query"]
+                if str(cq.get("message", {}).get("chat", {}).get("id")) != str(self.chat_id):
+                    continue
+                callback_data = cq.get("data", "")
+                if callback_data.startswith("paid:"):
+                    card_id = int(callback_data.split(":", 1)[1])
+                    confirmations.append(
+                        PaymentConfirmation(card_id=card_id, card_name_hint=None, source_channel=self.name)
+                    )
+                    self.answer_callback(cq["id"])
+
+            elif "message" in update:
+                msg = update["message"]
+                chat_id = msg.get("chat", {}).get("id")
+                if str(chat_id) != str(self.chat_id):
+                    continue
+
+                text = msg.get("text", "").strip()
+                lowered = text.lower()
+
+                if lowered in ADD_CARD_TRIGGERS:
+                    self._start_add_card(chat_id)
+                elif chat_id in self._pending_add:
+                    if lowered in CANCEL_TRIGGERS:
+                        del self._pending_add[chat_id]
+                        self._send_text(chat_id, "Cancelled.")
+                    else:
+                        self._handle_add_card_reply(chat_id, text)
+                elif lowered.startswith("/paid"):
+                    parts = text.split(maxsplit=1)
+                    if len(parts) == 2:
+                        confirmations.append(
+                            PaymentConfirmation(card_id=None, card_name_hint=parts[1].strip(), source_channel=self.name)
+                        )
+
+        if max_update_id >= offset:
+            self._save_offset(max_update_id + 1)
+
+        return confirmations
