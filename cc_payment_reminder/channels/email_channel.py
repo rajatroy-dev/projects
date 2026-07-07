@@ -17,3 +17,23 @@ needed on this box).
 This channel does not implement poll_updates() — there's nothing to poll;
 the base class's default (empty list) is used as-is.
 """
+
+import config
+from channels.base import NotificationChannel
+
+class EmailChannel(NotificationChannel):
+    name = "email"
+
+    def __init__(self):
+        required = {
+            "SES_SMTP_USER": config.SES_SMTP_USER,
+            "SES_SMTP_PASS": config.SES_SMTP_PASS,
+            "EMAIL_FROM": config.EMAIL_FROM,
+            "EMAIL_TO": config.EMAIL_TO,
+        }
+        missing = [k for k, v in required.items() if not v]
+        if missing:
+            raise RuntimeError(
+                f"Email channel missing required config: {', '.join(missing)}. "
+                f"Set these in .env."
+            )
