@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Maps channel names (from config.ACTIVE_CHANNELS) to their implementation.
 Adding a new channel later = add one line here + implement the class.
