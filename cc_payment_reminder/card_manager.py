@@ -9,7 +9,7 @@ Usage:
     python card_manager.py delete <id>
     python card_manager.py paid <id>
 """
-
+import argparse
 import sys
 
 import db
@@ -81,3 +81,40 @@ def cmd_delete(args):
         print("Deleted.")
     else:
         print("Cancelled.")
+
+def cmd_paid(args):
+    card = db.get_card(args.id)
+    if not card:
+        print(f"No card with id {args.id}")
+        sys.exit(1)
+    db.mark_paid(card.id)
+    print(f"Marked {card.display_name} as paid for cycle {card.cycle_month}.")
+
+
+def main():
+    db.init_db()
+
+    parser = argparse.ArgumentParser(description="Manage credit card bill reminders.")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    sub.add_parser("add", help="Add a new card").set_defaults(func=cmd_add)
+    sub.add_parser("list", help="List all cards").set_defaults(func=cmd_list)
+
+    p_edit = sub.add_parser("edit", help="Edit a card")
+    p_edit.add_argument("id", type=int)
+    p_edit.set_defaults(func=cmd_edit)
+
+    p_delete = sub.add_parser("delete", help="Delete a card")
+    p_delete.add_argument("id", type=int)
+    p_delete.set_defaults(func=cmd_delete)
+
+    p_paid = sub.add_parser("paid", help="Mark a card as paid for current cycle")
+    p_paid.add_argument("id", type=int)
+    p_paid.set_defaults(func=cmd_paid)
+
+    args = parser.parse_args()
+    args.func(args)
+
+
+if __name__ == "__main__":
+    main()
